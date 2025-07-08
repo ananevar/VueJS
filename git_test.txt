@@ -1,5 +1,1 @@
-<<<<<<< HEAD
 'version_1' 
-=======
-'version_2' 
->>>>>>> branch_2
