@@ -1,11 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Редактирование привычки</title>
+    <link rel="stylesheet" href="main.css">
+    <script defer src="main.js"></script>
 </head>
 <body>
-    
+
+    <div class="container">
+
+        <h1>Редактирование привычки</h1>
+
+        <form id="form">
+
+            <!-- Название привычки -->
+            <div class="form-group">
+                <label for="habitName">
+                    Название привычки<br>
+                    <input type="text" id="habitName" name="habitName" placeholder="Введите название привычки" required>
+                </label>
+                <br><br>
+            </div>
+
+            <!-- Описание -->
+            <div class="form-group">
+                <label for="habitDescription">Описание:</label><br>
+                <textarea id="habitDescription" name="habitDescription" rows="4" placeholder="Опишите вашу привычку"></textarea>
+                <br><br>
+            </div>
+
+            <!-- Частота -->
+            <div class="form-group">
+                <label for="frequency">
+                    Частота выполнения:
+                    <select id="frequency" name="frequency">
+                        <option value="1">Ежедневно</option>
+                        <option value="7">Еженедельно</option>
+                        <option value="30">Ежемесячно</option>
+                    </select>
+                </label>
+                <br>
+            </div>
+
+            <!-- Количество повторений -->
+            <div class="form-group">
+                <label for="period">
+                    Количество повторений <br>
+                    <input type="number" id="period" name="period" placeholder="Введите количество повторений" required>
+                </label>
+                <br><br>
+            </div>
+
+            <!-- Общее количество -->
+            <div class="form-group">
+                Общее количество повторений: 
+                <span id="totalCount"></span>
+            </div>
+
+            <!-- Кнопка отправки -->
+            <button type="submit">Сохранить изменения</button>
+
+        </form>
+
+    </div>
+
 </body>
 </html>
