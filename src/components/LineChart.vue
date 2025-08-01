@@ -1,95 +1,121 @@
 <template>
-  <div class="bg-white rounded-xl shadow p-6">
-    <h2 class="text-2xl font-semibold mb-4">Статистика {{ displayName }}</h2>
+  <div>
+    <div class="flex flex-col md:flex-row gap-4 mb-4">
+      <div class="flex-1">
+        <label>Начальная дата:</label>
+        <input type="date" v-model="startDate" class="w-full border rounded p-2" @change="updateChart" />
+      </div>
+      <div class="flex-1">
+        <label>Конечная дата:</label>
+        <input type="date" v-model="endDate" class="w-full border rounded p-2" @change="updateChart" />
+      </div>
+    </div>
+
     <canvas ref="chartRef"></canvas>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch, computed } from 'vue';
-import { Chart } from 'chart.js/auto';
+import { onMounted, watch, ref } from 'vue';
 import axios from 'axios';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 const props = defineProps({
-  country: String,
-  region: String,
+  country: {
+    type: String,
+    required: true,
+  }
 });
 
 const chartRef = ref(null);
 let chartInstance = null;
 
-const displayName = computed(() => {
-  if (props.region) return props.region;
-  if (props.country) return props.country;
-  return 'Мира';
-});
+const startDate = ref('');
+const endDate = ref('');
+let fullData = {
+  dates: [],
+  cases: [],
+  deaths: [],
+};
+
+// Функция для конвертации даты из M/D/YY в YYYY-MM-DD
+const toISO = (mdy) => {
+  const [month, day, year] = mdy.split('/');
+  const iso = new Date(`20${year}`, month - 1, day).toISOString().slice(0, 10);
+  return iso;
+};
 
 const fetchData = async () => {
-  let url = '';
-
-  if (props.region && props.country === 'Russia') {
-    // Тут можно добавить API для регионов России, если будет
-    // Пока покажем данные страны
-    url = `https://disease.sh/v3/covid-19/historical/${props.country}?lastdays=30`;
-  } else if (props.country) {
-    url = `https://disease.sh/v3/covid-19/historical/${props.country}?lastdays=30`;
-  } else {
-    url = 'https://disease.sh/v3/covid-19/historical/all?lastdays=30';
-  }
-
   try {
-    const res = await axios.get(url);
-    const data = props.country ? res.data.timeline || res.data : res.data;
+    const res = await axios.get(`https://disease.sh/v3/covid-19/historical/${props.country}?lastdays=all`);
+    const data = res.data.timeline || res.data;
 
-    if (chartInstance) {
-      chartInstance.destroy();
-    }
+    const dates = Object.keys(data.cases).map(toISO);
 
-    chartInstance = new Chart(chartRef.value, {
-      type: 'line',
-      data: {
-        labels: Object.keys(data.cases),
-        datasets: [
-          {
-            label: 'Заражения',
-            data: Object.values(data.cases),
-            borderColor: 'rgb(255, 99, 132)',
-            fill: false,
-          },
-          {
-            label: 'Смерти',
-            data: Object.values(data.deaths),
-            borderColor: 'rgb(54, 162, 235)',
-            fill: false,
-          },
-          {
-            label: 'Выздоровевшие',
-            data: Object.values(data.recovered),
-            borderColor: 'rgb(75, 192, 192)',
-            fill: false,
-          }
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom',
-          },
-        },
-      },
-    });
-  } catch (error) {
-    console.error('Ошибка при загрузке данных', error);
+    fullData = {
+      dates,
+      cases: Object.values(data.cases),
+      deaths: Object.values(data.deaths),
+    };
+
+    startDate.value = dates[0];
+    endDate.value = dates[dates.length - 1];
+
+    buildChart(dates, fullData.cases, fullData.deaths);
+  } catch (err) {
+    console.error('Ошибка при получении данных:', err);
   }
 };
 
-watch([() => props.country, () => props.region], fetchData, { immediate: true });
-</script>
+const buildChart = (labels, cases, deaths) => {
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
 
-<style scoped>
-canvas {
-  width: 100%;
-  height: 400px;
-}
-</style>
+  chartInstance = new Chart(chartRef.value, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Заражения',
+          data: cases,
+          borderColor: 'blue',
+          fill: false,
+        },
+        {
+          label: 'Смерти',
+          data: deaths,
+          borderColor: 'red',
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+};
+
+const updateChart = () => {
+  const startIndex = fullData.dates.findIndex(d => d === startDate.value);
+  const endIndex = fullData.dates.findIndex(d => d === endDate.value);
+
+  if (startIndex === -1 || endIndex === -1 || startIndex >= endIndex) return;
+
+  const dates = fullData.dates.slice(startIndex, endIndex + 1);
+  const cases = fullData.cases.slice(startIndex, endIndex + 1);
+  const deaths = fullData.deaths.slice(startIndex, endIndex + 1);
+
+  buildChart(dates, cases, deaths);
+};
+
+onMounted(fetchData);
+watch(() => props.country, fetchData);
+</script>
