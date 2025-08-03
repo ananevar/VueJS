@@ -53,10 +53,19 @@ body, html {
   box-sizing: border-box;
   overflow: hidden;
 }
+
+.panel-main {
+  width: 65%;
+  background: var(--panel-bg-dark);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--panel-shadow);
+  padding: 12px 32px 40px 32px;
+  border: var(--panel-border);
+}
 .aside-main {
   min-width: 340px;
-  max-width: 420px;
-  width: 25%;
+  max-width: 700px;
+  width: 35%;
   height: 100%;
   box-sizing: border-box;
   overflow: hidden;
@@ -64,13 +73,7 @@ body, html {
   flex-direction: column;
 }
 
-.panel-main {
-  background: var(--panel-bg-dark);
-  border-radius: var(--panel-radius);
-  box-shadow: var(--panel-shadow);
-  padding: 20px 32px 40px 32px;
-  border: var(--panel-border);
-}
+
 .panel-main-light {
   background: var(--panel-bg-light);
   border-radius: var(--panel-radius);
@@ -86,7 +89,7 @@ body, html {
   border-radius: 16px;
   box-shadow: 0 4px 24px 0 rgba(124,58,237,0.08);
   max-height: 60vh;
-  min-height: 300px;
+  min-height: 600px;
   overflow-y: auto;
 }
 .stats-table-header {
