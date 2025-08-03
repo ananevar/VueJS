@@ -1,16 +1,15 @@
 <template>
-  <div>
+  <div class="bg-gray-900 p-4 rounded shadow">
     <div class="flex flex-col md:flex-row gap-4 mb-4">
       <div class="flex-1">
-        <label>Начальная дата:</label>
-        <input type="date" v-model="startDate" class="w-full border rounded p-2" @change="updateChart" />
+        <label class="block mb-1">Начальная дата:</label>
+        <input type="date" v-model="startDate" class="w-full bg-gray-800 text-white border border-gray-600 p-2 rounded" @change="updateChart" />
       </div>
       <div class="flex-1">
-        <label>Конечная дата:</label>
-        <input type="date" v-model="endDate" class="w-full border rounded p-2" @change="updateChart" />
+        <label class="block mb-1">Конечная дата:</label>
+        <input type="date" v-model="endDate" class="w-full bg-gray-800 text-white border border-gray-600 p-2 rounded" @change="updateChart" />
       </div>
     </div>
-
     <canvas ref="chartRef"></canvas>
   </div>
 </template>
@@ -19,13 +18,11 @@
 import { onMounted, watch, ref } from 'vue';
 import axios from 'axios';
 import { Chart, registerables } from 'chart.js';
+
 Chart.register(...registerables);
 
 const props = defineProps({
-  country: {
-    type: String,
-    required: true,
-  }
+  country: String,
 });
 
 const chartRef = ref(null);
@@ -39,11 +36,9 @@ let fullData = {
   deaths: [],
 };
 
-// Функция для конвертации даты из M/D/YY в YYYY-MM-DD
 const toISO = (mdy) => {
   const [month, day, year] = mdy.split('/');
-  const iso = new Date(`20${year}`, month - 1, day).toISOString().slice(0, 10);
-  return iso;
+  return new Date(`20${year}`, month - 1, day).toISOString().slice(0, 10);
 };
 
 const fetchData = async () => {
@@ -52,7 +47,6 @@ const fetchData = async () => {
     const data = res.data.timeline || res.data;
 
     const dates = Object.keys(data.cases).map(toISO);
-
     fullData = {
       dates,
       cases: Object.values(data.cases),
@@ -69,9 +63,7 @@ const fetchData = async () => {
 };
 
 const buildChart = (labels, cases, deaths) => {
-  if (chartInstance) {
-    chartInstance.destroy();
-  }
+  if (chartInstance) chartInstance.destroy();
 
   chartInstance = new Chart(chartRef.value, {
     type: 'line',
@@ -81,22 +73,37 @@ const buildChart = (labels, cases, deaths) => {
         {
           label: 'Заражения',
           data: cases,
-          borderColor: 'blue',
-          fill: false,
+          borderColor: '#3b82f6',
+          backgroundColor: '#3b82f644',
+          fill: true,
+          tension: 0.4,
         },
         {
           label: 'Смерти',
           data: deaths,
-          borderColor: 'red',
-          fill: false,
+          borderColor: '#ef4444',
+          backgroundColor: '#ef444444',
+          fill: true,
+          tension: 0.4,
         },
       ],
     },
     options: {
       responsive: true,
+      plugins: {
+        legend: {
+          labels: { color: 'white' },
+        },
+      },
       scales: {
+        x: {
+          ticks: { color: 'white' },
+          grid: { color: '#444' },
+        },
         y: {
           beginAtZero: true,
+          ticks: { color: 'white' },
+          grid: { color: '#444' },
         },
       },
     },
@@ -104,8 +111,8 @@ const buildChart = (labels, cases, deaths) => {
 };
 
 const updateChart = () => {
-  const startIndex = fullData.dates.findIndex(d => d === startDate.value);
-  const endIndex = fullData.dates.findIndex(d => d === endDate.value);
+  const startIndex = fullData.dates.indexOf(startDate.value);
+  const endIndex = fullData.dates.indexOf(endDate.value);
 
   if (startIndex === -1 || endIndex === -1 || startIndex >= endIndex) return;
 
