@@ -1,0 +1,148 @@
+/* design-tokens.css — все основные переменные и классы для дизайна */
+
+:root {
+  --color-primary: #7c3aed; /* фиолетовый */
+  --color-secondary: #c10020; /* оранжевый */
+  --color-accent: #06b6d4; /* бирюзовый */
+  --main-bg-dark: #f6f6fa;
+  --main-bg-light: #fff;
+  --panel-bg-dark: #ede9fe;
+  --panel-bg-light: #fff;
+  --panel-radius: 24px;
+  --panel-shadow: 0 8px 32px 0 rgba(124, 58, 237, 0.10);
+  --panel-padding: 40px 32px;
+  --panel-border: 2px solid #e0e7ef;
+  --main-accent: var(--color-primary);
+  --main-accent-dark: #5b21b6;
+  --main-accent-light: #c4b5fd;
+  --main-danger: var(--color-secondary);
+  --main-success: var(--color-accent);
+  --main-warning: var(--color-secondary);
+  --main-text-dark: #2a2540;
+  --main-text-light: #fff;
+  --main-header-shadow: 0_2px_16px_rgba(124,58,237,0.18);
+  --main-font-family: 'Segoe UI', 'San Francisco', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+body, html {
+  font-family: var(--main-font-family);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  background: var(--main-bg-dark);
+  color: var(--main-text-dark);
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+/* Layout ограничения */
+.main-layout {
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  display: flex;
+}
+.panel-main, .panel-main-light {
+  min-height: 0;
+  max-height: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.aside-main {
+  min-width: 340px;
+  max-width: 420px;
+  width: 25%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-main {
+  background: var(--panel-bg-dark);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--panel-shadow);
+  padding: 20px 32px 40px 32px;
+  border: var(--panel-border);
+}
+.panel-main-light {
+  background: var(--panel-bg-light);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--panel-shadow);
+  padding: var(--panel-padding);
+  border: 1.5px solid #e0e7ef;
+}
+
+/* Таблица */
+.stats-table {
+  background: #fff;
+  color: var(--main-text-dark);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px 0 rgba(124,58,237,0.08);
+  max-height: 60vh;
+  min-height: 300px;
+  overflow-y: auto;
+}
+.stats-table-header {
+  background: #f3f4fd;
+  color: var(--color-primary);
+}
+.stats-table-row {
+  border-bottom: 1px solid #e0e7ef;
+}
+.stats-table-row:hover {
+  background: #f0fdfa;
+}
+
+/* Кнопки, инпуты, селекты */
+.input-main {
+  background: #f3f4fd;
+  border: 1.5px solid var(--color-accent);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--main-text-dark);
+  font-size: 1rem;
+  margin-bottom: 12px;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
+}
+.input-main:focus {
+  border: 2px solid var(--color-primary);
+  background: #fff;
+}
+
+.button-main {
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(124,58,237,0.10);
+  transition: background 0.3s, transform 0.2s;
+  font-family: inherit;
+}
+.button-main:hover {
+  background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-primary) 100%);
+  transform: translateY(-2px) scale(1.04);
+}
+
+/* Заголовки */
+.header-main {
+  color: var(--color-primary);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: var(--main-header-shadow);
+}
+.header-main-light {
+  color: var(--color-accent);
+  text-shadow: none;
+}

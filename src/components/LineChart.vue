@@ -1,5 +1,11 @@
 <template>
   <div class="bg-white p-6 rounded-2xl shadow-2xl mt-4">
+    <div class="mb-3">
+      <label for="country-select" class="block mb-2 font-semibold">Выберите страну:</label>
+      <select id="country-select" v-model="selectedCountry" class="w-full input-main">
+        <option v-for="c in countryList" :key="c" :value="c">{{ countryRu(c) }}</option>
+      </select>
+    </div>
     <div class="flex flex-col md:flex-row gap-4 mb-4">
       <div class="flex-1">
         <label class="block mb-2 text-gray-700 font-semibold">Начальная дата:</label>
@@ -18,12 +24,16 @@
 import { onMounted, watch, ref } from 'vue';
 import axios from 'axios';
 import { Chart, registerables } from 'chart.js';
+import { countryMap } from '../country-ru-map.js';
 
 Chart.register(...registerables);
 
-const props = defineProps({
-  country: String,
-});
+const countryList = ref([]);
+const selectedCountry = ref('Russia');
+
+function countryRu(name) {
+  return countryMap[name] || name;
+}
 
 const chartRef = ref(null);
 let chartInstance = null;
@@ -41,9 +51,18 @@ const toISO = (mdy) => {
   return new Date(`20${year}`, month - 1, day).toISOString().slice(0, 10);
 };
 
+const fetchCountryList = async () => {
+  try {
+    const res = await axios.get('https://disease.sh/v3/covid-19/countries');
+    countryList.value = res.data.map(c => c.country).sort();
+  } catch (e) {
+    countryList.value = ['Russia'];
+  }
+};
+
 const fetchData = async () => {
   try {
-    const res = await axios.get(`https://disease.sh/v3/covid-19/historical/${props.country}?lastdays=all`);
+    const res = await axios.get(`https://disease.sh/v3/covid-19/historical/${selectedCountry.value}?lastdays=all`);
     const data = res.data.timeline || res.data;
 
     const dates = Object.keys(data.cases).map(toISO);
@@ -123,6 +142,9 @@ const updateChart = () => {
   buildChart(dates, cases, deaths);
 };
 
-onMounted(fetchData);
-watch(() => props.country, fetchData);
+onMounted(() => {
+  fetchCountryList();
+  fetchData();
+});
+watch(selectedCountry, fetchData);
 </script>
