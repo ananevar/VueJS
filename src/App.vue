@@ -1,50 +1,31 @@
 <template>
-  <div class="min-h-screen bg-black text-white flex flex-row">
-    <!-- Левая панель (3/4 ширины) -->
-    <div class="flex-[3] p-4 overflow-auto">
-      <h1 class="text-3xl font-bold mb-6">Covid19: вспышка</h1>
-
-      <div class="mb-4">
-        <label class="block mb-1 text-gray-300">Выберите страну:</label>
-        <select v-model="selectedCountry" class="w-full bg-gray-900 border border-gray-700 text-white p-2 rounded">
+  <main class="main-layout flex flex-row w-full h-screen px-8 mx-8">
+    <!-- Левая панель: выбор страны + график (3/4) -->
+    <section class="panel flex flex-col gap-6 w-3/4 min-h-screen">
+      <h1 class="text-4xl font-extrabold mb-4 text-white drop-shadow-[0_2px_16px_rgba(0,198,255,0.45)]">Covid19: вспышка</h1>
+      <div class="mb-4 bg-white/5 rounded-xl shadow-lg p-4">
+        <label for="country-select" class="block mb-2 text-gray-200 font-semibold">Выберите страну:</label>
+        <select id="country-select" v-model="selectedCountry" class="w-full bg-white/10 border border-blue-400 text-white p-3 rounded-lg focus:ring-2 focus:ring-cyan-400 transition">
           <option v-for="c in countryList" :key="c" :value="c">{{ c }}</option>
         </select>
       </div>
-
       <LineChart :country="selectedCountry" />
-    </div>
+    </section>
 
-    <!-- Правая панель (1/4 ширины) -->
-    <div class="flex-[1] bg-gray-900 p-4 rounded shadow overflow-auto">
-      <h2 class="text-xl font-semibold mb-2">Статистика по странам</h2>
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-gray-700">
-            <th class="text-left p-2">Страна</th>
-            <th class="text-left p-2">Случаи</th>
-            <th class="text-left p-2">Выздоровело</th>
-            <th class="text-left p-2">Смертей</th>
-            <th class="text-left p-2">Новые</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in tableData" :key="row.country" class="border-b border-gray-800 hover:bg-gray-800">
-            <td class="p-2">{{ row.country }}</td>
-            <td class="p-2">{{ row.cases.toLocaleString() }}</td>
-            <td class="p-2 text-green-400">{{ row.recovered.toLocaleString() }}</td>
-            <td class="p-2 text-red-400">{{ row.deaths.toLocaleString() }}</td>
-            <td class="p-2 text-yellow-400">+{{ row.todayCases }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+    <aside class="flex flex-col w-1/4 min-h-screen">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 flex-1 flex flex-col">
+        <h2 class="text-2xl font-bold mb-4 text-cyan-700 drop-shadow">Статистика по странам</h2>
+        <StatsTable :tableData="tableData" />
+      </div>
+    </aside>
+  </main>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import LineChart from './components/LineChart.vue';
+import StatsTable from './components/StatsTable.vue';
 
 const selectedCountry = ref('Russia');
 const countryList = ref([]);

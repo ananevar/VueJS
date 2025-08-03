@@ -1,13 +1,13 @@
 <template>
-  <div class="bg-gray-900 p-4 rounded shadow">
+  <div class="bg-white p-6 rounded-2xl shadow-2xl mt-4">
     <div class="flex flex-col md:flex-row gap-4 mb-4">
       <div class="flex-1">
-        <label class="block mb-1">Начальная дата:</label>
-        <input type="date" v-model="startDate" class="w-full bg-gray-800 text-white border border-gray-600 p-2 rounded" @change="updateChart" />
+        <label class="block mb-2 text-gray-700 font-semibold">Начальная дата:</label>
+        <input type="date" v-model="startDate" class="w-full bg-white border border-blue-300 text-gray-800 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 transition" @change="updateChart" />
       </div>
       <div class="flex-1">
-        <label class="block mb-1">Конечная дата:</label>
-        <input type="date" v-model="endDate" class="w-full bg-gray-800 text-white border border-gray-600 p-2 rounded" @change="updateChart" />
+        <label class="block mb-2 text-gray-700 font-semibold">Конечная дата:</label>
+        <input type="date" v-model="endDate" class="w-full bg-white border border-blue-300 text-gray-800 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 transition" @change="updateChart" />
       </div>
     </div>
     <canvas ref="chartRef"></canvas>
@@ -73,16 +73,16 @@ const buildChart = (labels, cases, deaths) => {
         {
           label: 'Заражения',
           data: cases,
-          borderColor: '#3b82f6',
-          backgroundColor: '#3b82f644',
+          borderColor: '#2563eb',
+          backgroundColor: '#60a5fa33',
           fill: true,
           tension: 0.4,
         },
         {
           label: 'Смерти',
           data: deaths,
-          borderColor: '#ef4444',
-          backgroundColor: '#ef444444',
+          borderColor: '#dc2626',
+          backgroundColor: '#fca5a533',
           fill: true,
           tension: 0.4,
         },
@@ -92,18 +92,18 @@ const buildChart = (labels, cases, deaths) => {
       responsive: true,
       plugins: {
         legend: {
-          labels: { color: 'white' },
+          labels: { color: '#222', font: { weight: 'bold' } },
         },
       },
       scales: {
         x: {
-          ticks: { color: 'white' },
-          grid: { color: '#444' },
+          ticks: { color: '#222' },
+          grid: { color: '#e5e7eb' },
         },
         y: {
           beginAtZero: true,
-          ticks: { color: 'white' },
-          grid: { color: '#444' },
+          ticks: { color: '#222' },
+          grid: { color: '#e5e7eb' },
         },
       },
     },
