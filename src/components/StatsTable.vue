@@ -1,7 +1,7 @@
 <template>
-  <div class="overflow-auto stats-table">
+  <div class="stats-table">
     <table class="w-full text-base">
-      <thead class="stats-table-header">
+      <thead class="stats-table-header" style="position: sticky; top: 0; z-index: 2; background: #fff;">
         <tr>
           <th class="text-left p-3 font-bold cursor-pointer select-none" @click="sortBy('country')">
             Страна
@@ -21,20 +21,24 @@
           </th>
         </tr>
       </thead>
-      <tbody>
-        <tr v-for="row in sortedData" :key="row.country" class="stats-table-row">
-          <td class="p-3 font-semibold">{{ countryRu(row.country) }}</td>
-          <td class="p-3">{{ row.cases.toLocaleString() }}</td>
-          <td class="p-3" style="color: var(--main-success); font-weight: bold">{{ row.recovered.toLocaleString() }}</td>
-          <td class="p-3" style="color: var(--main-danger); font-weight: bold">{{ row.deaths.toLocaleString() }}</td>
-        </tr>
-      </tbody>
     </table>
+    <div class="overflow-auto" style="max-height: 60vh;">
+      <table class="w-full text-base">
+        <tbody>
+          <tr v-for="row in filteredData" :key="row.country" class="stats-table-row">
+            <td class="p-3 font-semibold">{{ countryRu(row.country) }}</td>
+            <td class="p-3">{{ row.cases.toLocaleString() }}</td>
+            <td class="p-3" style="color: var(--main-success); font-weight: bold">{{ row.recovered.toLocaleString() }}</td>
+            <td class="p-3" style="color: var(--main-danger); font-weight: bold">{{ row.deaths.toLocaleString() }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import axios from 'axios';
 import { countryMap } from '../country-ru-map.js';
 
@@ -43,8 +47,14 @@ function countryRu(name) {
 }
 
 const tableData = ref([]);
-const sortKey = ref('cases');
-const sortOrder = ref('desc');
+const props = defineProps({
+  search: { type: String, default: '' },
+  sortKey: { type: String, default: 'cases' },
+  sortOrder: { type: String, default: 'desc' }
+});
+const emit = defineEmits(['update:sortKey', 'update:sortOrder']);
+const sortKey = ref(props.sortKey);
+const sortOrder = ref(props.sortOrder);
 
 const sortBy = (key) => {
   if (sortKey.value === key) {
@@ -53,7 +63,18 @@ const sortBy = (key) => {
     sortKey.value = key;
     sortOrder.value = key === 'country' ? 'asc' : 'desc';
   }
+  emit('update:sortKey', sortKey.value);
+  emit('update:sortOrder', sortOrder.value);
+  saveTableState();
 };
+
+function saveTableState() {
+  localStorage.setItem('table_sortKey', sortKey.value);
+  localStorage.setItem('table_sortOrder', sortOrder.value);
+}
+
+// удаляем loadTableState, теперь всё управляется через пропсы
+
 
 const sortedData = computed(() => {
   const arr = [...tableData.value];
@@ -75,6 +96,12 @@ const sortedData = computed(() => {
   return arr;
 });
 
+const filteredData = computed(() => {
+  if (!props.search.trim()) return sortedData.value;
+  const q = props.search.trim().toLowerCase();
+  return sortedData.value.filter(row => countryRu(row.country).toLowerCase().includes(q));
+});
+
 onMounted(async () => {
   try {
     const res = await axios.get('https://disease.sh/v3/covid-19/countries');
@@ -83,4 +110,10 @@ onMounted(async () => {
     tableData.value = [];
   }
 });
+
+// search теперь управляется только из App.vue
+watch(sortKey, (v) => emit('update:sortKey', v));
+watch(sortOrder, (v) => emit('update:sortOrder', v));
+watch(sortKey, saveTableState);
+watch(sortOrder, saveTableState);
 </script>

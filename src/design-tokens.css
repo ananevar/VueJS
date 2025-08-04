@@ -45,6 +45,56 @@ body, html {
   max-height: 100vh;
   overflow: hidden;
   display: flex;
+  flex-direction: row;
+}
+.panel-main, .panel-main-light, .aside-main {
+  transition: width 0.3s, padding 0.3s;
+}
+
+@media (max-width: 900px) {
+  .main-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    max-height: none;
+  }
+  .panel-main, .panel-main-light {
+    width: 100% !important;
+    min-width: 0;
+    max-width: 100vw;
+    padding: 16px 8px 24px 8px;
+    border-radius: 0 0 24px 24px;
+  }
+  .aside-main {
+    width: 100% !important;
+    min-width: 0;
+    max-width: 100vw;
+    border-radius: 24px 24px 0 0;
+    margin-top: 12px;
+    padding: 12px 8px 16px 8px;
+  }
+  .stats-table {
+    max-height: 40vh;
+    min-height: 200px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-layout {
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+  }
+  .panel-main, .panel-main-light, .aside-main {
+    padding: 8px 2vw 12px 2vw !important;
+    border-radius: 0;
+  }
+  .stats-table {
+    font-size: 0.9rem;
+    min-height: 120px;
+    max-height: 30vh;
+  }
 }
 .panel-main, .panel-main-light {
   min-height: 0;
