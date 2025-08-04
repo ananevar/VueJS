@@ -46,7 +46,7 @@
 import { onMounted, watch, ref } from "vue";
 import axios from "axios";
 import { Chart, registerables } from "chart.js";
-import { countryMap } from "../country-ru-map.js";
+import { countryMap } from "../utils/country-ru-map.js";
 
 Chart.register(...registerables);
 

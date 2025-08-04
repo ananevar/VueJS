@@ -77,7 +77,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import axios from "axios";
-import { countryMap } from "../country-ru-map.js";
+import { countryMap } from "../utils/country-ru-map.js";
 
 function countryRu(name) {
   return countryMap[name] || name;
